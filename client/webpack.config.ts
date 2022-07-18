@@ -87,12 +87,21 @@ export function config({ analyze = false, isProduction, publicPath = '', environ
                     options: {
                         cacheDirectory: true,
                         presets: [
-                            '@babel/preset-env',
+                            [
+                                '@babel/preset-env',
+                                {
+                                    targets: [
+                                        'last 1 chrome version',
+                                        'last 1 firefox version',
+                                    ],
+                                },
+                            ],
                             [
                                 '@babel/preset-react',
                                 {
                                     development: isDevelopment,
                                     runtime: 'automatic',
+                                    importSource: '@emotion/react',
                                 },
                             ],
                             '@babel/preset-typescript',

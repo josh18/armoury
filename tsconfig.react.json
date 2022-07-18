@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "lib": ["dom", "dom.iterable", "es2022"],
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "jsxImportSource": "@emotion/react",
+        "noEmit": true
+    }
+}

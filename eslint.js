@@ -1,6 +1,6 @@
 module.exports = {
     parserOptions: {
-        ecmaVersion: 2021,
+        ecmaVersion: 2022,
         sourceType: 'module',
     },
     extends: [
@@ -9,6 +9,11 @@ module.exports = {
         'plugin:import/warnings',
     ],
     ignorePatterns: ['dist'],
+    settings: {
+        react: {
+            version: 'detect',
+        },
+    },
     rules: {
         'arrow-parens': ['warn', 'as-needed'],
         'comma-dangle': ['warn', 'always-multiline'],
@@ -24,11 +29,11 @@ module.exports = {
         'import/order': [
             'warn',
             {
-                "alphabetize": {
+                alphabetize: {
                     order: 'asc',
                     caseInsensitive: true,
                 },
-                "groups": [
+                groups: [
                     ['builtin', 'external'],
                     ['internal'],
                     ['index', 'sibling', 'parent'],
@@ -47,7 +52,7 @@ module.exports = {
         'prefer-const': ['warn', {
             destructuring: 'all',
         }],
-        'quote-props': ['warn', 'consistent-as-needed'],
+        'quote-props': ['warn', 'as-needed'],
         'sort-imports': ['warn', {
             ignoreCase: true,
             ignoreDeclarationSort: true,
@@ -69,6 +74,9 @@ module.exports = {
             'plugin:@typescript-eslint/recommended',
             'plugin:@typescript-eslint/recommended-requiring-type-checking',
             'plugin:import/typescript',
+            'plugin:react/recommended',
+            'plugin:react-hooks/recommended',
+            "plugin:react/jsx-runtime",
         ],
         rules: {
             '@typescript-eslint/array-type': [
@@ -135,6 +143,7 @@ module.exports = {
                 },
             ],
             '@typescript-eslint/no-non-null-assertion': 'off',
+            '@typescript-eslint/no-shadow': ['error'],
             '@typescript-eslint/no-unsafe-argument': 'off',
             '@typescript-eslint/no-unsafe-assignment': 'off',
             '@typescript-eslint/no-unsafe-call': 'off',
@@ -150,15 +159,6 @@ module.exports = {
             }],
             '@typescript-eslint/semi': 'warn',
             '@typescript-eslint/unbound-method': 'off',
-        },
-    }, {
-        files: ['*.tsx'],
-        extends: [
-            'plugin:react/recommended',
-            'plugin:react-hooks/recommended',
-            "plugin:react/jsx-runtime",
-        ],
-        rules: {
             'react/prop-types': 'off',
         },
     }],

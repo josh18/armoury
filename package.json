@@ -1,6 +1,6 @@
 {
   "name": "armoury",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Config and tools for web apps",
   "main": "index.js",
   "author": "Josh Hunt",
