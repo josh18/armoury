@@ -1,6 +1,7 @@
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import { existsSync } from 'fs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
@@ -33,11 +34,13 @@ class HtmlPublicPathPlugin {
     }
 }
 
+const swSrc = path.resolve(paths.src, 'serviceWorker.ts');
+
 export interface ConfigOptions extends ClientOptions {
     isProduction: boolean;
 }
 
-export function config({ analyze = false, isProduction, publicPath = '', environmentVariables }: ConfigOptions): Configuration {
+export function config({ analyze = false, isProduction, publicPath, environmentVariables }: ConfigOptions): Configuration {
     const isDevelopment = !isProduction;
 
     return {
@@ -49,7 +52,7 @@ export function config({ analyze = false, isProduction, publicPath = '', environ
             path: paths.dist,
             filename: 'static/js/[name].[contenthash:8].js',
             chunkFilename: 'static/js/[name].[contenthash:8].chunk.js',
-            publicPath: publicPath + '/',
+            publicPath,
             devtoolModuleFilenameTemplate: isProduction
                 ? (info: any) => path
                     .relative(paths.src, info.absoluteResourcePath)
@@ -125,14 +128,14 @@ export function config({ analyze = false, isProduction, publicPath = '', environ
             new HtmlWebpackPlugin({
                 template: path.resolve(paths.public, 'index.html'),
             }),
-            new HtmlPublicPathPlugin(publicPath),
+            !!publicPath && new HtmlPublicPathPlugin(publicPath),
             isDevelopment && new ReactRefreshWebpackPlugin(),
             isProduction && new MiniCssExtractPlugin({
                 filename: 'static/css/[name].[contenthash:8].css',
                 chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
             }),
-            isProduction && new InjectManifest({
-                swSrc: path.resolve(paths.src, 'serviceWorker.ts'),
+            isProduction && existsSync(swSrc) && new InjectManifest({
+                swSrc,
                 exclude: [/\.map$/, /asset-manifest\.json$/, /LICENSE/],
             }),
             new ForkTsCheckerWebpackPlugin({
