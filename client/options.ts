@@ -4,8 +4,7 @@ const root = process.cwd();
 
 export interface ClientOptions {
     analyze?: boolean;
-    publicPath?: string;
-    environmentVariables?: Record<string, unknown>;
+    replacementVariables?: Record<string, any>;
     devServer?: {
         staticPaths?: string[];
         port?: number;

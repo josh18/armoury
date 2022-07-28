@@ -16,17 +16,19 @@ function isTruthy<T>(value: false | T): value is T {
     return !!value === true;
 }
 
-class HtmlPublicPathPlugin {
+class HtmlVariablesPlugin {
     constructor(
-        private publicPath: string,
+        private replacementVariables: Record<string, any>,
     ) { }
 
     apply(compiler: Compiler) {
-        compiler.hooks.compilation.tap('HtmlPublicPathPlugin', compilation => {
+        compiler.hooks.compilation.tap('HtmlVariablesPlugin', compilation => {
             HtmlWebpackPlugin
                 .getHooks(compilation)
-                .afterTemplateExecution.tap('HtmlPublicPathPlugin', data => {
-                    data.html = data.html.replaceAll('%PUBLIC_PATH%', this.publicPath);
+                .afterTemplateExecution.tap('HtmlVariablesPlugin', data => {
+                    Object.entries(this.replacementVariables).forEach(([key, value]) => {
+                        data.html = data.html.replaceAll(`%${key}%`, value.toString());
+                    });
 
                     return data;
                 });
@@ -40,7 +42,7 @@ export interface ConfigOptions extends ClientOptions {
     isProduction: boolean;
 }
 
-export function config({ analyze = false, isProduction, publicPath, environmentVariables }: ConfigOptions): Configuration {
+export function config({ analyze = false, isProduction, replacementVariables }: ConfigOptions): Configuration {
     const isDevelopment = !isProduction;
 
     return {
@@ -52,7 +54,6 @@ export function config({ analyze = false, isProduction, publicPath, environmentV
             path: paths.dist,
             filename: 'static/js/[name].[contenthash:8].js',
             chunkFilename: 'static/js/[name].[contenthash:8].chunk.js',
-            publicPath,
             devtoolModuleFilenameTemplate: isProduction
                 ? (info: any) => path
                     .relative(paths.src, info.absoluteResourcePath)
@@ -128,7 +129,7 @@ export function config({ analyze = false, isProduction, publicPath, environmentV
             new HtmlWebpackPlugin({
                 template: path.resolve(paths.public, 'index.html'),
             }),
-            !!publicPath && new HtmlPublicPathPlugin(publicPath),
+            !!replacementVariables && new HtmlVariablesPlugin(replacementVariables),
             isDevelopment && new ReactRefreshWebpackPlugin(),
             isProduction && new MiniCssExtractPlugin({
                 filename: 'static/css/[name].[contenthash:8].css',
@@ -145,7 +146,7 @@ export function config({ analyze = false, isProduction, publicPath, environmentV
                 logger: 'webpack-infrastructure',
             }),
             analyze && new BundleAnalyzerPlugin(),
-            !!environmentVariables && new EnvironmentPlugin(environmentVariables),
+            !!replacementVariables && new EnvironmentPlugin(replacementVariables),
         ].filter(isTruthy),
     };
 }
