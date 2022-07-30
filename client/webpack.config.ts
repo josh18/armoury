@@ -130,7 +130,7 @@ export function config({ analyze = false, isProduction, replacementVariables }: 
                 template: path.resolve(paths.public, 'index.html'),
             }),
             !!replacementVariables && new HtmlVariablesPlugin(replacementVariables),
-            isDevelopment && new ReactRefreshWebpackPlugin(),
+            isDevelopment && new ReactRefreshWebpackPlugin({ overlay: false }),
             isProduction && new MiniCssExtractPlugin({
                 filename: 'static/css/[name].[contenthash:8].css',
                 chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
