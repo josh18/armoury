@@ -8,7 +8,7 @@ import { config } from './webpack.config';
 async function start() {
     const options = await loadOptions();
 
-    const port = options.devServer?.port ?? 8080;
+    const port = options.start?.port ?? 8080;
 
     const compiler = webpack({
         ...config({
@@ -22,7 +22,7 @@ async function start() {
     });
 
     const serverConfig: Configuration = {
-        static: [...options.devServer?.staticPaths ?? [], paths.public],
+        static: [...options.start?.staticPaths ?? [], paths.public],
         proxy: {
             '/api': {
                 target: 'http://localhost',

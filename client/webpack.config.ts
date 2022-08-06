@@ -12,7 +12,7 @@ import { InjectManifest } from 'workbox-webpack-plugin';
 
 import { ClientOptions, paths } from './options';
 
-function isTruthy<T>(value: false | T): value is T {
+function isTruthy<T>(value: false | undefined | T): value is T {
     return !!value === true;
 }
 
@@ -27,6 +27,8 @@ class HtmlVariablesPlugin {
                 .getHooks(compilation)
                 .afterTemplateExecution.tap('HtmlVariablesPlugin', data => {
                     Object.entries(this.replacementVariables).forEach(([key, value]) => {
+                        value ??= '';
+
                         data.html = data.html.replaceAll(`%${key}%`, value.toString());
                     });
 
@@ -42,8 +44,17 @@ export interface ConfigOptions extends ClientOptions {
     isProduction: boolean;
 }
 
-export function config({ analyze = false, isProduction, replacementVariables }: ConfigOptions): Configuration {
+export function config({ isProduction, build, replacementVariables }: ConfigOptions): Configuration {
     const isDevelopment = !isProduction;
+
+    let publicPath = '/';
+    if (isProduction && build?.appPath) {
+        publicPath = build.appPath;
+
+        if (!publicPath.endsWith('/')) {
+            publicPath += '/';
+        }
+    }
 
     return {
         mode: isProduction ? 'production' : 'development',
@@ -123,13 +134,17 @@ export function config({ analyze = false, isProduction, replacementVariables }: 
                     isProduction && MiniCssExtractPlugin.loader,
                     'css-loader',
                 ].filter(isTruthy),
+            }, {
+                test: /\.(png|jpe?g|gif|woff2|webp)$/i,
+                type: 'asset/resource',
             }],
         },
         plugins: [
             new HtmlWebpackPlugin({
                 template: path.resolve(paths.public, 'index.html'),
+                publicPath,
             }),
-            !!replacementVariables && new HtmlVariablesPlugin(replacementVariables),
+            replacementVariables && new HtmlVariablesPlugin(replacementVariables),
             isDevelopment && new ReactRefreshWebpackPlugin({ overlay: false }),
             isProduction && new MiniCssExtractPlugin({
                 filename: 'static/css/[name].[contenthash:8].css',
@@ -145,8 +160,8 @@ export function config({ analyze = false, isProduction, replacementVariables }: 
                 },
                 logger: 'webpack-infrastructure',
             }),
-            analyze && new BundleAnalyzerPlugin(),
-            !!replacementVariables && new EnvironmentPlugin(replacementVariables),
+            isProduction && build?.analyze && new BundleAnalyzerPlugin(),
+            replacementVariables && new EnvironmentPlugin(replacementVariables),
         ].filter(isTruthy),
     };
 }

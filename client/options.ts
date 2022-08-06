@@ -3,12 +3,15 @@ import { resolve } from 'path';
 const root = process.cwd();
 
 export interface ClientOptions {
-    analyze?: boolean;
     replacementVariables?: Record<string, any>;
-    devServer?: {
+    start?: {
         staticPaths?: string[];
         port?: number;
     };
+    build?: {
+        analyze?: boolean;
+        appPath?: string;
+    }
 }
 
 export async function loadOptions(): Promise<ClientOptions> {
