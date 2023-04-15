@@ -22,7 +22,7 @@ async function start() {
     });
 
     const serverConfig: Configuration = {
-        static: [...options.start?.staticPaths ?? [], paths.public],
+        static: [...(options.start?.staticPaths ?? []), paths.public],
         proxy: {
             '/api': {
                 target: 'http://localhost',
@@ -40,7 +40,7 @@ async function start() {
         historyApiFallback: true,
     };
 
-    compiler.hooks.done.tap('start.ts', stats => {
+    compiler.hooks.done.tap('start.ts', (stats) => {
         const url = `http://localhost:${port}`;
 
         clearConsole();

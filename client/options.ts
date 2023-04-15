@@ -11,7 +11,8 @@ export interface ClientOptions {
     build?: {
         analyze?: boolean;
         appPath?: string;
-    }
+    };
+    react?: boolean;
 }
 
 export async function loadOptions(): Promise<ClientOptions> {
@@ -25,8 +26,10 @@ export async function loadOptions(): Promise<ClientOptions> {
 }
 
 export const paths = {
+    root,
     dist: resolve(root, './dist'),
     public: resolve(root, './public'),
+    assets: resolve(root, './assets'),
     src: resolve(root, './src'),
     tsconfig: resolve(root, './tsconfig.json'),
 };

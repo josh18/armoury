@@ -5,6 +5,7 @@
         "forceConsistentCasingInFileNames": true,
         "module": "esnext",
         "moduleResolution": "node",
+        "noFallthroughCasesInSwitch": true,
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
